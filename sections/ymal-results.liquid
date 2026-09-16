@@ -1,0 +1,98 @@
+{% comment %} YMAL Results — headless render section, never added to pages directly {% endcomment %}
+
+{%- liquid
+  if recommendations.performed and recommendations.products_count > 0
+    assign ymal_products = recommendations.products
+  elsif collection != blank and collection.products_count > 0
+    assign ymal_products = collection.products
+  endif
+-%}
+
+{%- for product in ymal_products limit: 8 -%}
+  <li
+    id="ymal-card-{{ product.id }}"
+    class="grid__item ymal-slider__slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+      style="--animation-order: {{ forloop.index }};"
+    {% endif %}
+  >
+    {%- render 'card-product',
+      card_product: product,
+      media_aspect_ratio: section.settings.image_ratio,
+      image_shape: section.settings.image_shape,
+      lazy_load: false,
+      show_secondary_image: section.settings.show_secondary_image,
+      show_vendor: section.settings.show_vendor,
+      show_rating: section.settings.show_rating,
+      skip_styles: false,
+      section_id: section.id,
+      quick_add: section.settings.quick_add
+    -%}
+  </li>
+{%- endfor -%}
+
+
+{% schema %}
+{
+  "name": "YMAL Results",
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt",    "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait"       },
+        { "value": "square",   "label": "Square"         }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default",       "label": "Default"       },
+        { "value": "arch",          "label": "Arch"          },
+        { "value": "blob",          "label": "Blob"          },
+        { "value": "chevronleft",   "label": "Chevron left"  },
+        { "value": "chevronright",  "label": "Chevron right" },
+        { "value": "diamond",       "label": "Diamond"       },
+        { "value": "parallelogram", "label": "Parallelogram" },
+        { "value": "round",         "label": "Round"         }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "Show second image on hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "Show product rating"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "Quick add",
+      "options": [
+        { "value": "none",     "label": "None"     },
+        { "value": "standard", "label": "Standard" },
+        { "value": "bulk",     "label": "Bulk"     }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,817 @@
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web/src/regular/style.css" />
+
+<style>
+  .shopdev .preorder-badge {
+    position: absolute;
+    z-index: 10;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  .shopdev .preorder-badge--top-left { top: 12px; left: 12px; }
+  .shopdev .preorder-badge--top-right { top: 12px; right: 12px; }
+  .shopdev .preorder-badge--bottom-left { bottom: 12px; left: 12px; }
+  .shopdev .preorder-badge--bottom-right { bottom: 12px; right: 12px; }
+
+  .shopdev .preorder-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .shopdev .preorder-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .shopdev .preorder-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .shopdev .preorder-notice {
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .shopdev .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+  }
+  .shopdev .countdown-number {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .shopdev .countdown-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+  .shopdev .countdown-separator {
+    font-size: 24px;
+    font-weight: 700;
+    opacity: 0.4;
+    padding-top: 2px;
+  }
+
+  .shopdev .variant-selector select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+
+  .shopdev .email-signup-form {
+    display: flex;
+    gap: 8px;
+  }
+  .shopdev .email-signup-form input[type="email"] {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .shopdev .email-signup-form input[type="email"]:focus {
+    border-color: #6366f1;
+  }
+  .shopdev .email-signup-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .shopdev .email-signup-btn:hover {
+    opacity: 0.85;
+  }
+
+  .shopdev .preorder-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .shopdev .preorder-status-dot--preorder {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  }
+  .shopdev .preorder-status-dot--instock {
+    background-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+
+  @keyframes shopdev-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .shopdev .pulse-animation {
+    animation: shopdev-pulse 2s ease-in-out infinite;
+  }
+
+  .shopdev .success-message {
+    display: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .shopdev .success-message.show {
+    display: flex;
+  }
+
+  @media (max-width: 640px) {
+    .shopdev .email-signup-form {
+      flex-direction: column;
+    }
+    .shopdev .countdown-number {
+      font-size: 22px;
+    }
+    .shopdev .countdown-item {
+      min-width: 48px;
+    }
+  }
+</style>
+
+{%- assign product = section.settings.product -%}
+
+<div class="w-full max-w-[1200px] mx-auto px-4 py-8 md:py-12">
+  {% if product != blank %}
+    {%- comment -%} Determine preorder eligibility {%- endcomment -%}
+    {%- assign is_preorder = false -%}
+    {%- for tag in product.tags -%}
+      {%- assign tag_lower = tag | downcase -%}
+      {%- if tag_lower == 'preorder' or tag_lower == 'pre-order' -%}
+        {%- assign is_preorder = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} Also check inventory - if all variants are out of stock, treat as preorder {%- endcomment -%}
+    {%- assign all_sold_out = true -%}
+    {%- for variant in product.variants -%}
+      {%- if variant.available -%}
+        {%- assign all_sold_out = false -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if all_sold_out and section.settings.auto_preorder_when_sold_out -%}
+      {%- assign is_preorder = true -%}
+    {%- endif -%}
+
+    <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+      <!-- Product Image -->
+      <div class="w-full md:w-1/2 relative">
+        {% if is_preorder and section.settings.show_badge %}
+          <span class="preorder-badge preorder-badge--{{ section.settings.badge_position }}"
+                style="background-color: {{ section.settings.badge_bg_color }}; color: {{ section.settings.badge_text_color }};">
+            {{ section.settings.badge_text }}
+          </span>
+        {% endif %}
+
+        <div class="rounded-lg overflow-hidden bg-gray-50 aspect-square">
+          {%- if product.featured_image != blank -%}
+            {{ product.featured_image | image_url: width: 800 | image_tag:
+              class: 'w-full h-full object-cover',
+              loading: 'lazy',
+              sizes: '(max-width: 768px) 100vw, 50vw'
+            }}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag: 'w-full h-full bg-gray-100 p-12' }}
+          {%- endif -%}
+        </div>
+      </div>
+
+      <!-- Product Details & Preorder Form -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center">
+        <!-- Product Title & Price -->
+        <div class="mb-6">
+          {% if product.vendor != blank %}
+            <p class="text-sm uppercase tracking-wider text-gray-500 mb-1">{{ product.vendor }}</p>
+          {% endif %}
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{{ product.title }}</h2>
+          <div class="flex items-center gap-3">
+            <span class="text-xl font-semibold text-gray-900" id="preorder-price-{{ section.id }}">
+              {{ product.selected_or_first_available_variant.price | money }}
+            </span>
+            {%- if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price -%}
+              <span class="text-base text-gray-400 line-through" id="preorder-compare-price-{{ section.id }}">
+                {{ product.selected_or_first_available_variant.compare_at_price | money }}
+              </span>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Preorder Status Indicator -->
+        {% if is_preorder %}
+          <div class="flex items-center mb-4">
+            <span class="preorder-status-dot preorder-status-dot--preorder pulse-animation"></span>
+            <span class="text-sm font-medium" style="color: #d97706;">Pre-Order Available</span>
+          </div>
+        {% else %}
+          <div class="flex items-center mb-4">
+            <span class="preorder-status-dot preorder-status-dot--instock"></span>
+            <span class="text-sm font-medium text-green-700">In Stock</span>
+          </div>
+        {% endif %}
+
+        <!-- Estimated Availability Date -->
+        {% if is_preorder and section.settings.estimated_date != blank %}
+          <div class="flex items-center gap-2 mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+            <i class="ph ph-calendar-blank text-lg" style="color: #d97706;"></i>
+            <span class="text-sm text-amber-800">
+              <strong>Estimated Availability:</strong> {{ section.settings.estimated_date }}
+            </span>
+          </div>
+        {% endif %}
+
+        <!-- Countdown Timer -->
+        {% if is_preorder and section.settings.show_countdown and section.settings.countdown_date != blank %}
+          <div class="mb-6 p-4 rounded-lg text-center" style="background-color: {{ section.settings.countdown_bg_color }};">
+            <p class="text-xs uppercase tracking-wider mb-3 font-semibold" style="color: {{ section.settings.countdown_text_color }}; opacity: 0.8;">
+              {{ section.settings.countdown_heading }}
+            </p>
+            <div class="flex items-center justify-center gap-2 md:gap-4" id="countdown-{{ section.id }}">
+              <div class="countdown-item">
+                <span class="countdown-number" style="color: {{ section.settings.countdown_text_color }};" data-days>00</span>
+                <span class="countdown-label" style="color: {{ section.settings.countdown_text_color }};">Days</span>
+              </div>
+              <span class="countdown-separator" style="color: {{ section.settings.countdown_text_color }};">:</span>
+              <div class="countdown-item">
+                <span class="countdown-number" style="color: {{ section.settings.countdown_text_color }};" data-hours>00</span>
+                <span class="countdown-label" style="color: {{ section.settings.countdown_text_color }};">Hours</span>
+              </div>
+              <span class="countdown-separator" style="color: {{ section.settings.countdown_text_color }};">:</span>
+              <div class="countdown-item">
+                <span class="countdown-number" style="color: {{ section.settings.countdown_text_color }};" data-minutes>00</span>
+                <span class="countdown-label" style="color: {{ section.settings.countdown_text_color }};">Min</span>
+              </div>
+              <span class="countdown-separator" style="color: {{ section.settings.countdown_text_color }};">:</span>
+              <div class="countdown-item">
+                <span class="countdown-number" style="color: {{ section.settings.countdown_text_color }};" data-seconds>00</span>
+                <span class="countdown-label" style="color: {{ section.settings.countdown_text_color }};">Sec</span>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Variant Selector -->
+        {% if product.variants.size > 1 %}
+          <div class="variant-selector mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select Option</label>
+            <select id="variant-select-{{ section.id }}" data-section-id="{{ section.id }}">
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}"
+                        data-price="{{ variant.price | money }}"
+                        data-compare-price="{{ variant.compare_at_price | money }}"
+                        data-available="{{ variant.available }}"
+                        {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>
+                  {{ variant.title }} — {{ variant.price | money }}
+                  {%- unless variant.available %} (Sold Out){% endunless -%}
+                </option>
+              {% endfor %}
+            </select>
+
+            <!-- Per-variant preorder status -->
+            <div class="mt-2" id="variant-status-{{ section.id }}">
+              {%- assign selected_variant = product.selected_or_first_available_variant -%}
+              {% unless selected_variant.available %}
+                {% if is_preorder %}
+                  <span class="text-xs text-amber-600 flex items-center gap-1">
+                    <i class="ph ph-info"></i> This variant is available for pre-order
+                  </span>
+                {% endif %}
+              {% endunless %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Add to Cart / Preorder Button -->
+        <form id="preorder-form-{{ section.id }}" class="mb-5">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="variant-id-{{ section.id }}">
+          <input type="hidden" name="quantity" value="1">
+
+          {% if is_preorder %}
+            {%- if section.settings.preorder_note != blank -%}
+              <input type="hidden" name="properties[_preorder_note]" value="{{ section.settings.preorder_note }}">
+            {%- endif -%}
+            <button type="submit"
+                    class="preorder-btn"
+                    id="preorder-submit-{{ section.id }}"
+                    style="background-color: {{ section.settings.button_bg_color }}; color: {{ section.settings.button_text_color }};">
+              <i class="ph ph-clock-countdown"></i>
+              {{ section.settings.button_text }}
+            </button>
+          {% else %}
+            <button type="submit"
+                    class="preorder-btn"
+                    id="preorder-submit-{{ section.id }}"
+                    style="background-color: #111827; color: #ffffff;"
+                    {% unless product.available %}disabled{% endunless %}>
+              <i class="ph ph-shopping-cart-simple"></i>
+              {% if product.available %}Add to Cart{% else %}Sold Out{% endif %}
+            </button>
+          {% endif %}
+        </form>
+
+        <!-- Preorder Notice -->
+        {% if is_preorder and section.settings.preorder_notice != blank %}
+          <div class="preorder-notice mb-5" style="background-color: {{ section.settings.notice_bg_color }}; border: 1px solid {{ section.settings.notice_border_color }};">
+            <div class="flex items-start gap-3">
+              <i class="ph ph-info text-lg mt-[2px]" style="color: {{ section.settings.notice_icon_color }};"></i>
+              <div class="text-sm" style="color: {{ section.settings.notice_text_color }};">
+                {{ section.settings.preorder_notice }}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Email Notification Signup -->
+        {% if section.settings.show_email_signup %}
+          <div class="mt-2 p-4 rounded-lg border border-gray-200 bg-gray-50">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="ph ph-envelope-simple text-lg text-gray-600"></i>
+              <span class="text-sm font-semibold text-gray-800">{{ section.settings.email_signup_heading }}</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-3">{{ section.settings.email_signup_description }}</p>
+            <div class="email-signup-form" id="email-form-{{ section.id }}">
+              <input type="email" placeholder="Enter your email address" required id="email-input-{{ section.id }}">
+              <button type="button" class="email-signup-btn"
+                      style="background-color: {{ section.settings.button_bg_color }}; color: {{ section.settings.button_text_color }};"
+                      id="email-submit-{{ section.id }}">
+                Notify Me
+              </button>
+            </div>
+            <div class="success-message mt-2" id="email-success-{{ section.id }}">
+              <i class="ph ph-check-circle"></i>
+              <span>You'll be notified when this product is available!</span>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Product Description -->
+        {% if product.description != blank and section.settings.show_description %}
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-800 uppercase tracking-wider mb-3">Product Details</h3>
+            <div class="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none">
+              {{ product.description }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <!-- No product selected state -->
+    <div class="flex flex-col items-center justify-center py-16 text-center">
+      <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+        <i class="ph ph-package text-3xl text-gray-400"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-700 mb-2">No Product Selected</h3>
+      <p class="text-sm text-gray-500 max-w-md">Select a product in the section settings to display the preorder experience. Tag your product with "preorder" to enable preorder features.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  (function() {
+    const sectionId = '{{ section.id }}';
+
+    /* ---- Countdown Timer ---- */
+    {% if section.settings.show_countdown and section.settings.countdown_date != blank %}
+    (function initCountdown() {
+      const countdownEl = document.getElementById('countdown-' + sectionId);
+      if (!countdownEl) return;
+
+      const targetDate = new Date('{{ section.settings.countdown_date }}T23:59:59').getTime();
+
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          countdownEl.innerHTML = '<p style="font-size:14px;font-weight:600;opacity:0.8;">Pre-order window has ended</p>';
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        const daysEl = countdownEl.querySelector('[data-days]');
+        const hoursEl = countdownEl.querySelector('[data-hours]');
+        const minutesEl = countdownEl.querySelector('[data-minutes]');
+        const secondsEl = countdownEl.querySelector('[data-seconds]');
+
+        if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+        if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+        if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    })();
+    {% endif %}
+
+    /* ---- Variant Selector ---- */
+    const variantSelect = document.getElementById('variant-select-' + sectionId);
+    if (variantSelect) {
+      variantSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const variantId = selected.value;
+        const price = selected.getAttribute('data-price');
+        const comparePrice = selected.getAttribute('data-compare-price');
+        const available = selected.getAttribute('data-available') === 'true';
+
+        // Update hidden input
+        const hiddenInput = document.getElementById('variant-id-' + sectionId);
+        if (hiddenInput) hiddenInput.value = variantId;
+
+        // Update price display
+        const priceEl = document.getElementById('preorder-price-' + sectionId);
+        if (priceEl) priceEl.textContent = price;
+
+        const comparePriceEl = document.getElementById('preorder-compare-price-' + sectionId);
+        if (comparePriceEl) {
+          if (comparePrice && comparePrice !== price) {
+            comparePriceEl.textContent = comparePrice;
+            comparePriceEl.style.display = '';
+          } else {
+            comparePriceEl.style.display = 'none';
+          }
+        }
+
+        // Update variant status
+        const statusEl = document.getElementById('variant-status-' + sectionId);
+        if (statusEl) {
+          if (!available) {
+            statusEl.innerHTML = '<span class="text-xs text-amber-600 flex items-center gap-1"><i class="ph ph-info"></i> This variant is available for pre-order</span>';
+          } else {
+            statusEl.innerHTML = '<span class="text-xs text-green-600 flex items-center gap-1"><i class="ph ph-check-circle"></i> In stock — ready to ship</span>';
+          }
+        }
+      });
+    }
+
+    /* ---- Add to Cart / Preorder Form ---- */
+    const form = document.getElementById('preorder-form-' + sectionId);
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('preorder-submit-' + sectionId);
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="ph ph-spinner" style="animation: spin 1s linear infinite;"></i> Adding...';
+
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach(function(value, key) {
+          data[key] = value;
+        });
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: parseInt(data.id),
+            quantity: parseInt(data.quantity),
+            properties: data['properties[_preorder_note]'] ? { '_preorder_note': data['properties[_preorder_note]'] } : {}
+          })
+        })
+        .then(function(response) { return response.json(); })
+        .then(function(result) {
+          submitBtn.innerHTML = '<i class="ph ph-check-circle"></i> Added!';
+          setTimeout(function() {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          }, 2000);
+        })
+        .catch(function(error) {
+          submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error — Try Again';
+          setTimeout(function() {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          }, 2500);
+        });
+      });
+    }
+
+    /* ---- Email Signup ---- */
+    const emailSubmit = document.getElementById('email-submit-' + sectionId);
+    if (emailSubmit) {
+      emailSubmit.addEventListener('click', function() {
+        const emailInput = document.getElementById('email-input-' + sectionId);
+        const successMsg = document.getElementById('email-success-' + sectionId);
+        const emailForm = document.getElementById('email-form-' + sectionId);
+
+        if (!emailInput || !emailInput.value || !emailInput.checkValidity()) {
+          emailInput.reportValidity();
+          return;
+        }
+
+        // Simulate signup (in production, connect to Klaviyo, Mailchimp, or Shopify Customer API)
+        emailSubmit.textContent = 'Submitting...';
+        emailSubmit.disabled = true;
+
+        setTimeout(function() {
+          emailForm.style.display = 'none';
+          if (successMsg) successMsg.classList.add('show');
+          emailSubmit.textContent = 'Notify Me';
+          emailSubmit.disabled = false;
+        }, 1000);
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Custom Preorder",
+  "class": "shopdev",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show product description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_preorder_when_sold_out",
+      "label": "Auto-enable preorder when sold out",
+      "info": "Automatically treat sold-out products as preorder items, even without the 'preorder' tag.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Preorder Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show preorder badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Pre-Order"
+    },
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Badge position",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        }
+      ],
+      "default": "top-left"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Badge background color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Preorder Button"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Preorder button text",
+      "default": "Pre-Order Now"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Availability & Dates"
+    },
+    {
+      "type": "text",
+      "id": "estimated_date",
+      "label": "Estimated availability date",
+      "info": "e.g., 'March 15, 2025' or 'Spring 2025'",
+      "default": "March 15, 2025"
+    },
+    {
+      "type": "header",
+      "content": "Countdown Timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Show countdown timer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_heading",
+      "label": "Countdown heading",
+      "default": "Pre-Order Window Closes In"
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "Countdown end date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-03-01)",
+      "default": "2025-12-31"
+    },
+    {
+      "type": "color",
+      "id": "countdown_bg_color",
+      "label": "Countdown background color",
+      "default": "#1e1b4b"
+    },
+    {
+      "type": "color",
+      "id": "countdown_text_color",
+      "label": "Countdown text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Preorder Notice"
+    },
+    {
+      "type": "richtext",
+      "id": "preorder_notice",
+      "label": "Preorder notice message",
+      "default": "<p><strong>Pre-Order Terms:</strong> Your card will be charged at the time of purchase. This item is expected to ship by the estimated date above. You will receive a shipping confirmation email once your order has been dispatched. Pre-orders cannot be cancelled after 48 hours.</p>"
+    },
+    {
+      "type": "text",
+      "id": "preorder_note",
+      "label": "Cart line item note",
+      "info": "This note will be attached to the cart item as a line item property.",
+      "default": "Pre-Order Item — Ships by estimated date"
+    },
+    {
+      "type": "color",
+      "id": "notice_bg_color",
+      "label": "Notice background color",
+      "default": "#fef3c7"
+    },
+    {
+      "type": "color",
+      "id": "notice_border_color",
+      "label": "Notice border color",
+      "default": "#fcd34d"
+    },
+    {
+      "type": "color",
+      "id": "notice_text_color",
+      "label": "Notice text color",
+      "default": "#92400e"
+    },
+    {
+      "type": "color",
+      "id": "notice_icon_color",
+      "label": "Notice icon color",
+      "default": "#d97706"
+    },
+    {
+      "type": "header",
+      "content": "Email Notifications"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email_signup",
+      "label": "Show email notification signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "email_signup_heading",
+      "label": "Email signup heading",
+      "default": "Get Notified"
+    },
+    {
+      "type": "text",
+      "id": "email_signup_description",
+      "label": "Email signup description",
+      "default": "Sign up to receive updates about this product, including shipping notifications and release news."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Preorder",
+      "settings": {
+        "product": "windbreaker-jacket",
+        "show_description": true,
+        "auto_preorder_when_sold_out": true,
+        "show_badge": true,
+        "badge_text": "Pre-Order",
+        "badge_position": "top-left",
+        "badge_bg_color": "#f59e0b",
+        "badge_text_color": "#ffffff",
+        "button_text": "Pre-Order Now",
+        "button_bg_color": "#4f46e5",
+        "button_text_color": "#ffffff",
+        "estimated_date": "March 15, 2025",
+        "show_countdown": true,
+        "countdown_heading": "Pre-Order Window Closes In",
+        "countdown_date": "2025-12-31",
+        "countdown_bg_color": "#1e1b4b",
+        "countdown_text_color": "#ffffff",
+        "preorder_notice": "<p><strong>Pre-Order Terms:</strong> Your card will be charged at the time of purchase. This item is expected to ship by March 15, 2025. You will receive a shipping confirmation email once your order has been dispatched. Pre-orders cannot be cancelled after 48 hours.</p>",
+        "preorder_note": "Pre-Order Item — Ships by March 15, 2025",
+        "notice_bg_color": "#fef3c7",
+        "notice_border_color": "#fcd34d",
+        "notice_text_color": "#92400e",
+        "notice_icon_color": "#d97706",
+        "show_email_signup": true,
+        "email_signup_heading": "Get Notified",
+        "email_signup_description": "Sign up to receive updates about this product, including shipping notifications and release news."
+      }
+    }
+  ]
+}
+{% endschema %}

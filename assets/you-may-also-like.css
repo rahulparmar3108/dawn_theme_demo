@@ -1,0 +1,44 @@
+/* Skeleton loaders */
+.ymal-skeleton .ymal-skeleton__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--media-radius, 0.4rem);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-foreground), 0.06) 25%,
+    rgba(var(--color-foreground), 0.10) 50%,
+    rgba(var(--color-foreground), 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: ymal-shimmer 1.4s infinite;
+}
+
+.ymal-skeleton__line {
+  height: 1.4rem;
+  margin-top: 1rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-foreground), 0.06) 25%,
+    rgba(var(--color-foreground), 0.10) 50%,
+    rgba(var(--color-foreground), 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: ymal-shimmer 1.4s infinite;
+}
+
+.ymal-skeleton__line--title { width: 75%; }
+.ymal-skeleton__line--price { width: 40%; }
+
+@keyframes ymal-shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Source label */
+.ymal-source-label {
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.55);
+  font-style: italic;
+  margin: 0.4rem 0 0;
+}

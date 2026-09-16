@@ -1,0 +1,101 @@
+{% comment %} Order on WhatsApp Section {% endcomment %}
+{{ 'whatsapp-order.css' | asset_url | stylesheet_tag }}
+
+{%- assign product_price   = product.price | money -%}
+{%- assign product_url     = shop.url | append: product.url -%}
+{%- assign product_variant = product.selected_or_first_available_variant.title -%}
+{%- assign wa_number_clean = section.settings.wa_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')' -%}
+
+{%- assign raw_msg = section.settings.msg_template -%}
+{%- assign wa_msg  = raw_msg | replace: 'PRODUCT_TITLE',   product.title -%}
+{%- assign wa_msg  = wa_msg  | replace: 'PRODUCT_PRICE',   product_price -%}
+{%- assign wa_msg  = wa_msg  | replace: 'PRODUCT_VARIANT', product_variant -%}
+{%- assign wa_msg  = wa_msg  | replace: 'PRODUCT_URL',     product_url -%}
+
+{%- unless product.available -%}
+  {%- assign hide_btn = true -%}
+{%- endunless -%}
+
+{% comment %} {%- assign wa_encoded = wa_msg | url_encode -%}
+{%- assign wa_link = "https://wa.me/" | append: wa_number_clean | append: "?text=" | append: wa_encoded -%} {% endcomment %}
+
+{% unless hide_btn %}
+<a href="javascript:void(0)"
+   id="wa-order-btn-{{ section.id }}"
+   class="wa-order-btn"
+   data-n="{{ wa_number_clean | base64_encode }}"
+   data-msg="{{ wa_msg }}"
+   data-url="{{ product_url }}"
+   aria-label="Order on WhatsApp"
+   style="background:#25d366;color:#ffffff;border-radius:50px;display:inline-flex;align-items:center;gap:8px;padding:12px 22px;font-size:15px;font-weight:500;text-decoration:none;"
+>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+  </svg>
+  <span>{{ section.settings.btn_text | default: "Order on WhatsApp" }}</span>
+</a>
+{% endunless %}
+
+<script>
+(function () {
+  var btn = document.getElementById('wa-order-btn-{{ section.id }}');
+  if (!btn) return;
+
+  function getQty() {
+    var qtyInput =
+      document.querySelector('input[name="quantity"]') ||
+      document.querySelector('.quantity__input') ||
+      document.querySelector('[id*="Quantity"]') ||
+      document.querySelector('[name="qty"]');
+    return qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+  }
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    var phone   = atob(btn.dataset.n);
+    var qty     = getQty();
+    var baseMsg = btn.dataset.msg;
+    var url     = btn.dataset.url;
+
+    var finalMsg = baseMsg.replace('QTY_PLACEHOLDER', qty);
+    finalMsg    += '\n\nLink: ' + url;
+
+    var waLink = 'https://api.whatsapp.com/send?phone=' + phone + '&text=' + encodeURIComponent(finalMsg);
+
+    var tempA = document.createElement('a');
+    tempA.href = waLink;
+    tempA.target = '_blank';
+    tempA.rel = 'noopener noreferrer';
+    document.body.appendChild(tempA);
+    tempA.click();
+    document.body.removeChild(tempA);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Order on WhatsApp",
+  "settings": [
+    {"type":"text","id":"btn_text","label":"Button text","default":"Order on WhatsApp"},
+    {"type":"text","id":"wa_number","label":"WhatsApp number","info":"Include country code, no + sign. Example: 919876543210","default":"919876543210"},
+    {"type":"textarea","id":"msg_template","label":"Pre-filled message","default":"Hi! I'd like to order: PRODUCT_TITLE\nVariant: PRODUCT_VARIANT\nPrice: PRODUCT_PRICE\nQty: QTY_PLACEHOLDER\n\nPlease confirm availability."},
+    {"type":"checkbox","id":"hide_out_of_stock","label":"Hide when out of stock","default":true},
+    {"type":"select","id":"btn_placement","label":"Button placement",
+      "options":[
+        {"value":"below-atc","label":"Below Add to Cart"},
+        {"value":"floating","label":"Floating"},
+        {"value":"inline","label":"Inline"}
+      ],"default":"below-atc"},
+    {"type":"select","id":"btn_animation","label":"Animation",
+      "options":[
+        {"value":"none","label":"None"},
+        {"value":"pulse","label":"Pulse"},
+        {"value":"bounce","label":"Bounce"},
+        {"value":"shake","label":"Shake on hover"}
+      ],"default":"none"}
+  ],
+  "presets":[{"name":"Order on WhatsApp"}]
+}
+{% endschema %}

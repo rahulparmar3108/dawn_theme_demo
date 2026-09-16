@@ -1,0 +1,242 @@
+{% comment %} Countdown Timer Section {% endcomment %}
+{{ 'countdown.css' | asset_url | stylesheet_tag }}
+
+{% assign bg_style = '' %}
+{% if section.settings.bg_type == 'solid' %}
+  {% assign bg_style = 'background-color:' | append: section.settings.solid_color | append: ';' %}
+{% elsif section.settings.bg_type == 'gradient' %}
+  {% assign bg_style = 'background:linear-gradient(' | append: section.settings.grad_direction | append: ',' | append: section.settings.grad_color1 | append: ',' | append: section.settings.grad_color2 | append: ');' %}
+{% elsif section.settings.bg_type == 'image' %}
+  {% if section.settings.bg_image != blank %}
+    {% assign img_url = section.settings.bg_image | image_url: width: 1920 %}
+    {% assign bg_style = 'background-image:url(' | append: img_url | append: ');background-size:cover;background-position:center;background-repeat:no-repeat;' %}
+  {% endif %}
+{% endif %}
+
+{% assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0 %}
+
+<section
+  id="countdown-{{ section.id }}"
+  class="countdown-section countdown-align--{{ section.settings.text_align }}"
+  style="{{ bg_style }} color:{{ section.settings.text_color }}; padding:{{ section.settings.section_padding }}px 24px;"
+>
+  {% if section.settings.bg_type == 'image' and section.settings.bg_image != blank %}
+    <div class="countdown-overlay" style="background:rgba(0,0,0,{{ overlay_opacity }});"></div>
+  {% endif %}
+
+  <div class="countdown-inner">
+    {% if section.settings.label != blank %}
+      <p class="countdown-label">{{ section.settings.label }}</p>
+    {% endif %}
+
+    <div class="countdown-digits" data-end="{{ section.settings.end_date }}">
+      <div class="digit-block">
+        <span class="digit-num" id="countdown-days-{{ section.id }}">00</span>
+        <span class="digit-unit">{{ section.settings.label_days | default: 'Days' }}</span>
+      </div>
+      <span class="digit-sep">:</span>
+      <div class="digit-block">
+        <span class="digit-num" id="countdown-hrs-{{ section.id }}">00</span>
+        <span class="digit-unit">{{ section.settings.label_hours | default: 'Hrs' }}</span>
+      </div>
+      <span class="digit-sep">:</span>
+      <div class="digit-block">
+        <span class="digit-num" id="countdown-min-{{ section.id }}">00</span>
+        <span class="digit-unit">{{ section.settings.label_minutes | default: 'Min' }}</span>
+      </div>
+      <span class="digit-sep">:</span>
+      <div class="digit-block">
+        <span class="digit-num" id="countdown-sec-{{ section.id }}">00</span>
+        <span class="digit-unit">{{ section.settings.label_seconds | default: 'Sec' }}</span>
+      </div>
+    </div>
+
+    {% if section.settings.end_message != blank %}
+      <p class="countdown-end-msg" style="display:none;">{{ section.settings.end_message }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function () {
+  var sectionId = '{{ section.id }}';
+  var endTime = new Date('{{ section.settings.end_date }}').getTime();
+
+  var dEl = document.getElementById('countdown-days-' + sectionId);
+  var hEl = document.getElementById('countdown-hrs-' + sectionId);
+  var mEl = document.getElementById('countdown-min-' + sectionId);
+  var sEl = document.getElementById('countdown-sec-' + sectionId);
+  var section = document.getElementById('countdown-' + sectionId);
+  var digitsWrap = section.querySelector('.countdown-digits');
+  var endMsg = section.querySelector('.countdown-end-msg');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    var diff = endTime - Date.now();
+    if (diff <= 0) {
+      clearInterval(timer);
+      if (digitsWrap) digitsWrap.style.display = 'none';
+      if (endMsg) endMsg.style.display = 'block';
+      return;
+    }
+    dEl.textContent = pad(Math.floor(diff / 86400000));
+    hEl.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    mEl.textContent = pad(Math.floor((diff % 3600000) / 60000));
+    sEl.textContent = pad(Math.floor((diff % 60000) / 1000));
+  }
+
+  var timer = setInterval(tick, 1000);
+  tick();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Timer"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Sale ends in"
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date & time (ISO format)",
+      "default": "2026-06-01T00:00:00",
+      "info": "Format: YYYY-MM-DDTHH:MM:SS"
+    },
+    {
+      "type": "textarea",
+      "id": "end_message",
+      "label": "Message after timer ends",
+      "default": "The offer has expired."
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Timer position",
+      "options": [
+        { "value": "left",   "label": "Left"   },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right"  }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section padding (top & bottom)",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Unit labels"
+    },
+    {
+      "type": "text",
+      "id": "label_days",
+      "label": "Days label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours label",
+      "default": "Hrs"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes label",
+      "default": "Min"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds label",
+      "default": "Sec"
+    },
+    {
+      "type": "header",
+      "content": "Background styling"
+    },
+    {
+      "type": "select",
+      "id": "bg_type",
+      "label": "Background type",
+      "options": [
+        { "value": "solid",    "label": "Solid color" },
+        { "value": "gradient", "label": "Gradient"    },
+        { "value": "image",    "label": "Image"       }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "solid_color",
+      "label": "Solid color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "grad_color1",
+      "label": "Gradient — start color",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "color",
+      "id": "grad_color2",
+      "label": "Gradient — end color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "select",
+      "id": "grad_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to right",  "label": "Left → Right"  },
+        { "value": "to bottom", "label": "Top → Bottom"  },
+        { "value": "135deg",    "label": "Diagonal ↘"    },
+        { "value": "to left",   "label": "Right → Left"  },
+        { "value": "to top",    "label": "Bottom → Top"  }
+      ],
+      "default": "to right"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Image overlay darkness",
+      "default": 40
+    }
+  ],
+  "presets": [
+    { "name": "Countdown Timer" }
+  ]
+}
+{% endschema %}

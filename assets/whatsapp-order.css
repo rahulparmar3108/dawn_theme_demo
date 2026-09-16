@@ -1,0 +1,10 @@
+.wa-order-btn { transition: opacity .2s, transform .15s; }
+.wa-order-btn:hover { opacity: .88; }
+.wa-order-btn:active { transform: scale(.97); }
+
+@media (max-width: 767px) { .wa-hide-mobile { display: none !important; } }
+@media (min-width: 768px) { .wa-hide-desktop { display: none !important; } }
+
+@keyframes wa-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+@keyframes wa-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+@keyframes wa-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)} }

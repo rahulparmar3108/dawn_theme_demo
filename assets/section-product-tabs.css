@@ -1,0 +1,208 @@
+/* =========================================
+   Product Tabs — Dawn Theme Compatible CSS
+   ========================================= */
+
+.product-tabs {
+  padding-top: {{ section.settings.padding_top }}px;
+  padding-bottom: {{ section.settings.padding_bottom }}px;
+}
+
+/* ----- Header: tabs + button row ----- */
+.product-tabs__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.6rem;
+  margin-bottom: 2.4rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+/* ----- Tab Nav ----- */
+.product-tabs__nav {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.product-tabs__tab {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 1.2rem 2rem 1.4rem;
+  font-family: var(--font-heading-family);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+  font-size: calc(var(--font-heading-scale) * 1.6rem);
+  color: rgba(var(--color-foreground), 0.45);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+  -webkit-appearance: none;
+  outline-offset: 0.3rem;
+}
+
+.product-tabs__tab::after {
+  content: '';
+  position: absolute;
+  bottom: -0.1rem;
+  left: 0;
+  right: 0;
+  height: 0.2rem;
+  background-color: rgb(var(--color-foreground));
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+.product-tabs__tab:hover {
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+.product-tabs__tab.active {
+  color: rgb(var(--color-foreground));
+}
+
+.product-tabs__tab.active::after {
+  transform: scaleX(1);
+}
+
+/* ----- Button ----- */
+.product-tabs__button {
+  font-size: 1.2rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  white-space: nowrap;
+  color: rgb(var(--color-foreground));
+  padding-bottom: 1.4rem;
+}
+
+.product-tabs__button:hover {
+  opacity: 0.75;
+}
+
+/* ----- Tab Panels ----- */
+.product-tabs__panel {
+  display: none;
+}
+
+.product-tabs__panel.active {
+  display: block;
+  animation: tabFadeIn 0.3s ease forwards;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(0.6rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----- Product Grid ----- */
+.product-tabs__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media screen and (max-width: 989px) {
+  .product-tabs__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .product-tabs__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+/* ----- Product Card ----- */
+.product-tabs__card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-tabs__image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--media-radius);
+  background-color: rgba(var(--color-foreground), 0.04);
+  aspect-ratio: 1 / 1;
+}
+
+.product-tabs__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.product-tabs__card-link:hover .product-tabs__image {
+  transform: scale(1.04);
+}
+
+.product-tabs__placeholder {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.product-tabs__placeholder svg {
+  width: 100%;
+  height: 100%;
+  fill: rgba(var(--color-foreground), 0.1);
+}
+
+/* ----- Card Info ----- */
+.product-tabs__card-info {
+  padding-top: 1rem;
+}
+
+.product-tabs__product-title {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin: 0 0 0.4rem;
+  color: rgb(var(--color-foreground));
+  line-height: 1.4;
+}
+
+.product-tabs__product-price {
+  margin: 0;
+  font-size: 1.4rem;
+  color: rgb(var(--color-foreground));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.product-tabs__price--sale {
+  color: rgb(var(--color-sale-badge-background, var(--color-foreground)));
+}
+
+.product-tabs__price--compare {
+  color: rgba(var(--color-foreground), 0.5);
+  font-size: 1.2rem;
+}
+
+/* ----- Empty State ----- */
+.product-tabs__empty {
+  padding: 4rem 0;
+  text-align: center;
+  color: rgba(var(--color-foreground), 0.5);
+  font-size: 1.4rem;
+}
+
+/* ----- Editor Placeholder ----- */
+.product-tabs__placeholder {
+  padding: 4rem;
+  text-align: center;
+  border: 0.2rem dashed rgba(var(--color-foreground), 0.15);
+  border-radius: var(--media-radius);
+  color: rgba(var(--color-foreground), 0.5);
+}

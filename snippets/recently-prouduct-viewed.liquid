@@ -1,0 +1,22 @@
+<script>
+  (function () {
+    // Only run on product pages
+    if (window.location.pathname.indexOf('/products/') !== -1) {
+      const key = 'dawn:recently-viewed';
+      const id = {{ product.id | default: 'null' }};
+      
+      if (!id) return;
+      
+      let items = JSON.parse(localStorage.getItem(key) || '[]');
+      
+      // Remove if already exists
+      items = items.filter(i => i != id);
+      
+      // Add to beginning
+      items.unshift(id);
+      
+      // Keep only last 10 products
+      localStorage.setItem(key, JSON.stringify(items.slice(0, 10)));
+    }
+  })();
+</script>

@@ -1,0 +1,109 @@
+{% liquid
+  assign products_to_show = section.settings.products_limit
+%}
+
+<div class="page-width">
+  <h2>{{ section.settings.heading }}</h2>
+
+  <div class="swiper">
+    <div class="swiper-wrapper">
+
+      {% if section.settings.carousel_type == 'best_sellers' %}
+        
+        {% assign products = collections['best-sellers'].products %}
+
+      {% elsif section.settings.carousel_type == 'new_arrivals' %}
+        
+        {% assign products = collections['new-arrivals'].products %}
+
+      {% endif %}
+
+      {% if section.settings.carousel_type != 'recommendations' %}
+        {% for product in products limit: products_to_show %}
+          <div class="swiper-slide">
+            {% render 'card-product', card_product: product %}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+    </div>
+  </div>
+
+  {% if section.settings.carousel_type == 'recommendations' %}
+    <div id="recommended-products" class="swiper-wrapper"></div>
+
+    <script>
+      fetch('/recommendations/products.json?product_id={{ section.settings.product_for_recommendation.id }}&limit={{ products_to_show }}')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('recommended-products');
+
+          if (data.products.length > 0) {
+            data.products.forEach(product => {
+              container.innerHTML += `
+                <div class="swiper-slide">
+                  <a href="${product.url}">
+                    <img src="${product.featured_image}" />
+                    <p>${product.title}</p>
+                  </a>
+                </div>
+              `;
+            });
+          }
+        });
+    </script>
+  {% endif %}
+</div>
+{% schema %}
+{
+  "name": "Homepage Product Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "select",
+      "id": "carousel_type",
+      "label": "Carousel Type",
+      "options": [
+        {
+          "value": "best_sellers",
+          "label": "Best Sellers"
+        },
+        {
+          "value": "new_arrivals",
+          "label": "New Arrivals"
+        },
+        {
+          "value": "recommendations",
+          "label": "You May Like"
+        }
+      ],
+      "default": "best_sellers"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Number of products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "product",
+      "id": "product_for_recommendation",
+      "label": "Base product (for recommendations)",
+      "info": "Used only for 'You May Like'"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Homepage Product Carousel"
+    }
+  ]
+}
+{% endschema %}

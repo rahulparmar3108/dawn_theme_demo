@@ -1,0 +1,382 @@
+/* ============================================
+   Image Hotspot Section — assets/image-hotspot.css
+   ============================================ */
+
+/* Section wrapper */
+.image-hotspot-section {
+  width: 100%;
+}
+
+/* Heading */
+.hs-heading {
+  font-size: 2.4rem;
+  font-weight: 500;
+  margin-bottom: 1.6rem;
+  color: rgb(var(--color-foreground));
+  letter-spacing: 0.02em;
+}
+
+/* Image wrapper — position relative so dots sit on top */
+.hs-image-wrap {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Image itself */
+.hs-image {
+  width: 100%;
+  display: block;
+}
+
+/* Aspect ratio support */
+.hs-image-wrap[data-ratio="16/9"] { aspect-ratio: 16 / 9; }
+.hs-image-wrap[data-ratio="4/3"]  { aspect-ratio: 4 / 3;  }
+.hs-image-wrap[data-ratio="1/1"]  { aspect-ratio: 1 / 1;  }
+
+/* Placeholder SVG */
+.hs-placeholder {
+  width: 100%;
+  min-height: 40rem;
+  background: rgb(var(--color-background));
+}
+
+/* ============================================
+   Hotspot dot base
+   ============================================ */
+.hs-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.2rem solid currentColor;
+  background: rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+  z-index: 5;
+}
+
+.hs-dot:hover,
+.hs-dot:focus-visible {
+  transform: translate(-50%, -50%) scale(1.15);
+  outline: none;
+}
+
+/* ============================================
+   Pulse type
+   ============================================ */
+.hs-dot--pulse .hs-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 0.2rem solid currentColor;
+  opacity: 0.5;
+  animation: hs-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.hs-dot--pulse .hs-core {
+  display: block;
+  width: 55%;
+  height: 55%;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+@keyframes hs-ping {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0;   }
+}
+
+/* ============================================
+   Plus type
+   ============================================ */
+.hs-dot--plus .hs-ring {
+  display: none;
+}
+
+.hs-dot--plus .hs-core {
+  display: block;
+  width: 55%;
+  height: 55%;
+  background: currentColor;
+  clip-path: polygon(
+    40% 0%, 60% 0%,
+    60% 40%, 100% 40%,
+    100% 60%, 60% 60%,
+    60% 100%, 40% 100%,
+    40% 60%, 0% 60%,
+    0% 40%, 40% 40%
+  );
+}
+
+/* ============================================
+   Pin type
+   ============================================ */
+.hs-dot--pin {
+  border-radius: 50% 50% 50% 0;
+  transform: translate(-50%, -100%) rotate(-45deg);
+  border: none;
+  background: currentColor;
+}
+
+.hs-dot--pin:hover,
+.hs-dot--pin:focus-visible {
+  transform: translate(-50%, -100%) rotate(-45deg) scale(1.15);
+}
+
+.hs-dot--pin .hs-ring {
+  display: none;
+}
+
+.hs-dot--pin .hs-core {
+  display: block;
+  width: 45%;
+  height: 45%;
+  border-radius: 50%;
+  background: rgb(var(--color-background));
+  transform: rotate(45deg);
+}
+
+/* ============================================
+   Popup container
+   ============================================ */
+.hs-popup {
+  position: absolute;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  min-width: 16rem;
+  max-width: 24rem;
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+  box-sizing: border-box;
+}
+
+.hs-dot:hover .hs-popup,
+.hs-dot:focus-visible .hs-popup,
+.hs-dot:focus-within .hs-popup,
+.hs-popup.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ============================================
+   Popup position variants (set via data-pos on .hs-dot)
+   ============================================ */
+.hs-dot[data-pos="top"] .hs-popup {
+  bottom: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+}
+
+.hs-dot:hover[data-pos="top"] .hs-popup,
+.hs-dot:focus-visible[data-pos="top"] .hs-popup,
+.hs-dot:focus-within[data-pos="top"] .hs-popup {
+  transform: translateX(-50%) translateY(0);
+}
+
+.hs-dot[data-pos="bottom"] .hs-popup {
+  top: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+}
+.hs-dot:hover[data-pos="bottom"] .hs-popup,
+.hs-dot:focus-visible[data-pos="bottom"] .hs-popup,
+.hs-dot:focus-within[data-pos="bottom"] .hs-popup {
+  transform: translateX(-50%) translateY(0);
+}
+
+.hs-dot[data-pos="left"] .hs-popup {
+  right: calc(100% + 1rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+}
+.hs-dot:hover[data-pos="left"] .hs-popup,
+.hs-dot:focus-visible[data-pos="left"] .hs-popup,
+.hs-dot:focus-within[data-pos="left"] .hs-popup {
+  transform: translateY(-50%) translateX(0);
+}
+
+.hs-dot[data-pos="right"] .hs-popup {
+  left: calc(100% + 1rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+}
+.hs-dot:hover[data-pos="right"] .hs-popup,
+.hs-dot:focus-visible[data-pos="right"] .hs-popup,
+.hs-dot:focus-within[data-pos="right"] .hs-popup {
+  transform: translateY(-50%) translateX(0);
+}
+.hs-popup:hover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Pin type popup offset correction */
+.hs-dot--pin[data-pos="top"] .hs-popup {
+  bottom: calc(100% + 2rem);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.hs-dot--pin[data-pos="top"] .hs-popup {
+  transform: translateX(-50%) rotate(45deg) translateY(-50%);
+}
+
+/* Re-correct pin — rotate the dot, not the popup */
+.hs-dot--pin .hs-popup {
+  transform-origin: center;
+}
+
+.hs-dot--pin[data-pos="top"] .hs-popup {
+  bottom: calc(100% + 2rem);
+  left: 50%;
+  transform: rotate(45deg) translateX(-50%);
+}
+
+.hs-dot--pin[data-pos="bottom"] .hs-popup {
+  top: calc(100% + 1rem);
+  left: 50%;
+  transform: rotate(45deg) translateX(-50%);
+}
+
+.hs-dot--pin[data-pos="left"] .hs-popup {
+  right: calc(100% + 1rem);
+  top: 0;
+  transform: rotate(45deg) translateY(-50%);
+}
+
+.hs-dot--pin[data-pos="right"] .hs-popup {
+  left: calc(100% + 1rem);
+  top: 0;
+  transform: rotate(45deg) translateY(-50%);
+}
+
+.hotspots-item-arrow{
+    display: block !important;
+    background-color: #ffffff;
+    width: 10px;
+    height: 10px;
+    z-index: -1;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.hotspots-item-arrow::before{
+    content: "";
+    position: absolute;
+    top: -18px;
+    left: 0px;
+    transform: rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+}
+
+/* ============================================
+   Popup content
+   ============================================ */
+.hs-popup-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: rgb(var(--color-foreground));
+  margin: 0 0 0.4rem;
+  line-height: 1.4;
+}
+
+.hs-popup-desc {
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.65);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================
+   Video embed inside popup
+   ============================================ */
+.hs-video-wrap {
+  /* position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border-radius: inherit; */
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: inherit;
+  overflow: hidden;
+  background: #000;
+}
+
+/* .hs-video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+} */
+.hs-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-shadow: none;
+    border: 0px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+/* ============================================
+   Mobile visibility
+   ============================================ */
+@media screen and (max-width: 749px) {
+  .hs-section--hide-mobile {
+    display: none !important;
+  }
+
+  /* Smaller dots on mobile to avoid overlap */
+  .hs-dot {
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+  }
+
+  /* Popups always open bottom on mobile to avoid viewport clipping */
+  .hs-dot[data-pos="top"] .hs-popup,
+  .hs-dot[data-pos="left"] .hs-popup,
+  .hs-dot[data-pos="right"] .hs-popup {
+    bottom: auto;
+    right: auto;
+    left: 0;
+    top: calc(100% + 0.8rem);
+    transform: none;
+    max-width: 20rem;
+    min-width: 14rem;
+  }
+
+  .hs-dot[data-pos="bottom"] .hs-popup {
+    left: 0;
+    transform: none;
+  }
+
+  .hs-popup-title { font-size: 1.3rem; }
+  .hs-popup-desc  { font-size: 1.2rem; }
+
+  .hs-popup.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .hs-heading {
+    font-size: 3.2rem;
+  }
+}

@@ -1,0 +1,367 @@
+{% doc %}
+  Renders a customer type selection popup for logged-in customers without a type tag.
+  Shows retailer, wholesaler, or distributor options and tags the customer via API.
+  Includes loading state, success message (with auto-close), and error handling.
+
+  @example
+  {% render 'customer-tag-popup' %}
+{% enddoc %}
+
+{% if customer %}
+  {%- assign allowed_tags = "retailer,wholesaler,distributor" | split: "," -%}
+  {%- assign has_tag = false -%}
+  {%- for tag in allowed_tags -%}
+    {%- if customer.tags contains tag -%}
+      {%- assign has_tag = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- unless has_tag -%}
+    <div id="ctp-overlay" class="ctp-overlay" role="dialog" aria-modal="true" aria-labelledby="ctp-heading">
+      <div class="ctp-modal">
+        <div class="ctp-modal__header">
+          <h2 id="ctp-heading" class="ctp-modal__title">Select Customer Type</h2>
+          <p class="ctp-modal__desc">Please choose your customer type to continue.</p>
+        </div>
+
+        <div class="ctp-modal__body">
+
+          <div class="ctp-cards" id="ctp-cards">
+            <button class="ctp-card" data-tag="retailer" type="button" aria-label="Select Retailer">
+              <span class="ctp-card__icon" aria-hidden="true">🏪</span>
+              <span class="ctp-card__label">Retailer</span>
+            </button>
+            <button class="ctp-card" data-tag="wholesaler" type="button" aria-label="Select Wholesaler">
+              <span class="ctp-card__icon" aria-hidden="true">🏭</span>
+              <span class="ctp-card__label">Wholesaler</span>
+            </button>
+            <button class="ctp-card" data-tag="distributor" type="button" aria-label="Select Distributor">
+              <span class="ctp-card__icon" aria-hidden="true">🚚</span>
+              <span class="ctp-card__label">Distributor</span>
+            </button>
+          </div>
+
+          <div class="ctp-success" id="ctp-success" hidden>
+            <p class="ctp-success__emoji">✅</p>
+            <p class="ctp-success__title">Thank you</p>
+            <p class="ctp-success__msg">Your customer type has been updated successfully.</p>
+          </div>
+
+          <div class="ctp-error" id="ctp-error" hidden>
+            <p class="ctp-error__msg" id="ctp-error-msg">Something went wrong. Please try again.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {%- endunless -%}
+{% endif %}
+
+{% stylesheet %}
+  /* ── Overlay ── */
+  .ctp-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  /* ── Modal ── */
+  .ctp-modal {
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 8px 24px rgba(0,0,0,0.10),
+      0 24px 64px rgba(0,0,0,0.14);
+    width: 100%;
+    max-width: 440px;
+    overflow: hidden;
+    animation: ctp-appear 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes ctp-appear {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* ── Header ── */
+  .ctp-modal__header {
+    padding: 36px 32px 8px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0;
+  }
+
+  .ctp-modal__title {
+    font-weight: 700;
+    color: #0f0f0f;
+    margin: 0 0 8px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .ctp-modal__desc {
+    font-size: 1.2rem;
+    color: #6b7280;
+    margin: 0 0 20px;
+    line-height: 1.55;
+  }
+
+  /* ── Body ── */
+  .ctp-modal__body {
+    padding: 24px 32px 32px;
+  }
+
+  /* ── Cards ── */
+  .ctp-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ctp-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.15s ease,
+      box-shadow 0.18s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ctp-cards[hidden]{
+    display: none;
+  }
+
+  .ctp-card:hover:not(:disabled) {
+    border-color: #111827;
+    background-color: #f9fafb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .ctp-card:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .ctp-card:focus-visible {
+    outline: 2px solid #111827;
+    outline-offset: 2px;
+  }
+
+  .ctp-card:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .ctp-card__icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .ctp-card__label {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #111827;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  /* ── Loading state ── */
+  .ctp-card--loading {
+    cursor: wait;
+    pointer-events: none;
+  }
+
+  .ctp-card--loading .ctp-card__icon,
+  .ctp-card--loading .ctp-card__label {
+    opacity: 0;
+  }
+
+  .ctp-card--loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2.5px solid #d1d5db;
+    border-top-color: #111827;
+    border-radius: 50%;
+    animation: ctp-spin 0.65s linear infinite;
+  }
+
+  @keyframes ctp-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── Success ── */
+  .ctp-success {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+
+  .ctp-success__emoji {
+    font-size: 2.5rem;
+    margin: 0 0 12px;
+    line-height: 1;
+  }
+
+  .ctp-success__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f0f0f;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .ctp-success__msg {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* ── Error ── */
+  .ctp-error__msg {
+    font-size: 0.875rem;
+    color: #dc2626;
+    text-align: center;
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .ctp-modal__header {
+      padding: 28px 20px 8px;
+    }
+
+    .ctp-modal__body {
+      padding: 20px 20px 26px;
+    }
+
+    .ctp-modal__title {
+      font-size: 1.15rem;
+    }
+
+    .ctp-card {
+      padding: 14px 16px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var overlay  = document.getElementById("ctp-overlay");
+    if (!overlay) return;
+
+    var cards    = overlay.querySelectorAll(".ctp-card");
+    var cardsEl  = document.getElementById("ctp-cards");
+    var successEl = document.getElementById("ctp-success");
+    var errorEl  = document.getElementById("ctp-error");
+    var errorMsg = document.getElementById("ctp-error-msg");
+    var busy     = false;
+
+    function lockButtons(activeBtn) {
+      busy = true;
+      cards.forEach(function (btn) { btn.disabled = true; });
+      activeBtn.classList.add("ctp-card--loading");
+    }
+
+    function unlockButtons(activeBtn) {
+      busy = false;
+      cards.forEach(function (btn) { btn.disabled = false; });
+      activeBtn.classList.remove("ctp-card--loading");
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg || "Something went wrong. Please try again.";
+      errorEl.removeAttribute("hidden");
+    }
+
+    function hideError() {
+      errorEl.setAttribute("hidden", "");
+    }
+
+    function showSuccess() {
+      var body = overlay.querySelector(".ctp-modal__body");
+      cardsEl.setAttribute("hidden", "");
+      successEl.removeAttribute("hidden");
+      setTimeout(function () {
+        overlay.style.transition = "opacity 0.45s ease";
+        overlay.style.opacity    = "0";
+        setTimeout(function () { overlay.remove(); }, 460);
+      }, 1000);
+    }
+
+    cards.forEach(function (btn) {
+      btn.addEventListener("click", async function () {
+        if (busy) return;
+        hideError();
+        lockButtons(btn);
+
+        try {
+          var res = await fetch(
+            "/apps/customer-type",
+            {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body:    JSON.stringify({
+                customer_id: {{ customer.id }},
+                tag:         this.dataset.tag
+              })
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Server responded with status " + res.status);
+          }
+
+          var data = await res.json();
+
+          if (data.success) {
+            showSuccess();
+          } else {
+            unlockButtons(btn);
+            showError(data.message || null);
+          }
+        } catch (err) {
+          unlockButtons(btn);
+          showError("Network error — please check your connection and try again.");
+        }
+      }.bind(btn));
+    });
+  })();
+</script>

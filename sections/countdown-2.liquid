@@ -1,0 +1,373 @@
+{% comment %}
+  Section: Countdown Timer
+  A beautiful full-width countdown timer section with a background image and overlay.
+{% endcomment %}
+
+{%- style -%}
+  .ct-section-{{ section.id }} {
+    position: relative;
+    width: 100%;
+    min-height: {{ section.settings.section_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: {{ section.settings.text_color }};
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+
+  .ct-background-{{ section.id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .ct-background-{{ section.id }} .ct-desktop-bg,
+  .ct-background-{{ section.id }} .ct-mobile-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ct-background-{{ section.id }} .ct-mobile-bg {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    {% if section.settings.mobile_background_image != blank %}
+      .ct-background-{{ section.id }} .ct-desktop-bg { display: none; }
+      .ct-background-{{ section.id }} .ct-mobile-bg { display: block; }
+    {% endif %}
+  }
+
+  .ct-overlay-{{ section.id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: {{ section.settings.overlay_color }};
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 0;
+  }
+
+  .ct-content-{{ section.id }} {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .ct-heading-{{ section.id }} {
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .ct-subheading-{{ section.id }} {
+    font-size: {{ section.settings.subheading_size }}px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+  }
+
+  .ct-timer-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+
+  .ct-timer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+  }
+
+  .ct-timer-number {
+    font-size: {{ section.settings.timer_size }}px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .ct-timer-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .ct-timer-separator {
+    font-size: {{ section.settings.timer_size | times: 0.8 }}px;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: -15px;
+  }
+
+  .ct-button-{{ section.id }} {
+    display: inline-block;
+    padding: 15px 40px;
+    border: 2px solid {{ section.settings.text_color }};
+    color: {{ section.settings.text_color }};
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+
+  .ct-button-{{ section.id }}:hover {
+    background: {{ section.settings.text_color }};
+    color: #000;
+  }
+
+  @media (max-width: 768px) {
+    .ct-heading-{{ section.id }} { font-size: {{ section.settings.heading_size | times: 0.8 }}px; }
+    .ct-timer-number { font-size: {{ section.settings.timer_size | times: 0.7 }}px; }
+    .ct-timer-separator { font-size: {{ section.settings.timer_size | times: 0.5 }}px; }
+    .ct-timer-wrap { gap: 10px; }
+    .ct-timer-item { min-width: 60px; }
+  }
+{%- endstyle -%}
+
+<section class="ct-section-{{ section.id }}">
+  <div class="ct-background-{{ section.id }}">
+    {%- if section.settings.background_image != blank -%}
+      {{ section.settings.background_image | image_url: width: 2000 | image_tag: 
+        class: 'ct-desktop-bg', 
+        loading: 'lazy', 
+        alt: section.settings.background_image.alt | escape 
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg ct-desktop-bg' }}
+    {%- endif -%}
+
+    {%- if section.settings.mobile_background_image != blank -%}
+      {{ section.settings.mobile_background_image | image_url: width: 800 | image_tag: 
+        class: 'ct-mobile-bg', 
+        loading: 'lazy', 
+        alt: section.settings.mobile_background_image.alt | escape 
+      }}
+    {%- endif -%}
+  </div>
+  
+  <div class="ct-overlay-{{ section.id }}"></div>
+
+  <div class="ct-content-{{ section.id }}">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="ct-heading-{{ section.id }}">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    
+    {%- if section.settings.subheading != blank -%}
+      <p class="ct-subheading-{{ section.id }}">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+
+    <div class="ct-timer-wrap" id="countdown-{{ section.id }}" data-date="{{ section.settings.end_date }}">
+      <div class="ct-timer-item">
+        <span class="ct-timer-number js-days">00</span>
+        <span class="ct-timer-label">Days</span>
+      </div>
+      <span class="ct-timer-separator">:</span>
+      <div class="ct-timer-item">
+        <span class="ct-timer-number js-hours">00</span>
+        <span class="ct-timer-label">Hours</span>
+      </div>
+      <span class="ct-timer-separator">:</span>
+      <div class="ct-timer-item">
+        <span class="ct-timer-number js-minutes">00</span>
+        <span class="ct-timer-label">Minutes</span>
+      </div>
+      <span class="ct-timer-separator">:</span>
+      <div class="ct-timer-item">
+        <span class="ct-timer-number js-seconds">00</span>
+        <span class="ct-timer-label">Seconds</span>
+      </div>
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <a href="{{ section.settings.button_link }}" class="ct-button-{{ section.id }}">
+        {{ section.settings.button_label }}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function() {
+    const initTimer = () => {
+      const timerElement = document.getElementById('countdown-{{ section.id }}');
+      if (!timerElement) return;
+
+      const endDateStr = timerElement.getAttribute('data-date');
+      if (!endDateStr) return;
+
+      const endDate = new Date(endDateStr).getTime();
+      
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const distance = endDate - now;
+
+        if (distance < 0) {
+          timerElement.innerHTML = "<h3>EXPIRED</h3>";
+          clearInterval(interval);
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        timerElement.querySelector('.js-days').innerText = days.toString().padStart(2, '0');
+        timerElement.querySelector('.js-hours').innerText = hours.toString().padStart(2, '0');
+        timerElement.querySelector('.js-minutes').innerText = minutes.toString().padStart(2, '0');
+        timerElement.querySelector('.js-seconds').innerText = seconds.toString().padStart(2, '0');
+      };
+
+      const interval = setInterval(updateTimer, 1000);
+      updateTimer();
+    };
+
+    document.addEventListener('DOMContentLoaded', initTimer);
+    if (window.Shopify && window.Shopify.designMode) {
+      document.addEventListener('shopify:section:load', initTimer);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image (Desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_background_image",
+      "label": "Background Image (Mobile)"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Flash sale!"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "default": 48
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Catch this exclusive deal before it ends soon"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading Font Size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End Date",
+      "info": "Format: YYYY-MM-DDTHH:MM:SS (e.g., 2026-12-31T23:59:59)",
+      "default": "2026-12-31T23:59:59"
+    },
+    {
+      "type": "range",
+      "id": "timer_size",
+      "label": "Timer Font Size",
+      "min": 30,
+      "max": 120,
+      "step": 2,
+      "default": 80
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section Height (px)",
+      "min": 300,
+      "max": 1000,
+      "step": 50,
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown Timer"
+    }
+  ]
+}
+{% endschema %}
