@@ -1,0 +1,875 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    padding-left: {{ section.settings.padding_sides | times: 0.75 | round: 0 }}px;
+    padding-right: {{ section.settings.padding_sides | times: 0.75 | round: 0 }}px;
+    margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+      padding-left: {{ section.settings.padding_sides }}px;
+      padding-right: {{ section.settings.padding_sides }}px;
+      margin-top: {{ section.settings.margin_top }}px;
+      margin-bottom: {{ section.settings.margin_bottom }}px;
+    }
+  }
+
+  #why-we-are-better-{{ section.id }} {
+    --heading-color: {{ section.settings.heading_color }};
+    --title-color: {{ section.settings.title_color }};
+    --text-color: {{ section.settings.text_color }};
+    --icon-color: {{ section.settings.icon_color }};
+    --bg-color: {{ section.settings.bg_color }};
+    --border-color: {{ section.settings.border_color }};
+    --image-border-color: {{ section.settings.image_border_color }};
+
+    display: block;
+    background: {{ section.settings.bg_gradient | default: section.settings.bg_color }};
+    border-top: {{ section.settings.border_width }}px solid var(--border-color);
+    border-bottom: {{ section.settings.border_width }}px solid var(--border-color);
+  }
+
+  .why-better__wrapper-{{ section.id }} {
+    max-width: {{ section.settings.content_max_width }}px;
+    margin: 0 auto;
+  }
+
+  /* Main Heading */
+  .why-better__heading-{{ section.id }} {
+    color: var(--heading-color);
+    font-size: {{ section.settings.heading_size_mobile }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    text-align: {{ section.settings.heading_alignment }};
+    margin: 0 0 {{ section.settings.heading_margin_bottom }}px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  @media screen and (min-width: 750px) {
+    .why-better__heading-{{ section.id }} {
+      font-size: {{ section.settings.heading_size_desktop }}px;
+    }
+  }
+
+  /* Grid Layout */
+  .why-better__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ section.settings.item_gap_mobile }}px;
+    align-items: center;
+  }
+
+  @media screen and (min-width: 990px) {
+    .why-better__grid {
+      grid-template-columns: 1fr {{ section.settings.image_column_width }}px 1fr;
+      gap: {{ section.settings.item_gap_desktop }}px;
+    }
+  }
+
+  /* Columns */
+  .why-better__column {
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.item_gap_mobile }}px;
+  }
+  @media screen and (min-width: 990px) {
+    .why-better__column {
+      gap: {{ section.settings.item_gap_desktop }}px;
+    }
+  }
+
+  /* Image Column Order on Mobile */
+  .why-better__image-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    order: {{ section.settings.mobile_image_order }};
+  }
+  @media screen and (min-width: 990px) {
+    .why-better__image-column {
+      order: 2;
+    }
+    .why-better__column--left { order: 1; }
+    .why-better__column--right { order: 3; }
+  }
+
+  /* Center Feature Image */
+  .why-better__image-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    border: {{ section.settings.image_border_width }}px solid var(--image-border-color);
+    overflow: hidden;
+    box-sizing: border-border;
+  }
+
+  .why-better__image-wrapper img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: {{ section.settings.image_border_radius }}px;
+  }
+
+  /* Feature Item Card */
+  .why-better__item {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    /* Content Alignment Mobile */
+    {% case section.settings.content_alignment_mobile %}
+      {% when 'left' %}
+        align-items: flex-start;
+        text-align: left;
+      {% when 'right' %}
+        align-items: flex-end;
+        text-align: right;
+      {% else %}
+        align-items: center;
+        text-align: center;
+    {% endcase %}
+  }
+
+  @media screen and (min-width: 990px) {
+    .why-better__item {
+      /* Content Alignment Desktop */
+      {% case section.settings.content_alignment_desktop %}
+        {% when 'left' %}
+          align-items: flex-start;
+          text-align: left;
+        {% when 'right' %}
+          align-items: flex-end;
+          text-align: right;
+        {% else %}
+          align-items: center;
+          text-align: center;
+      {% endcase %}
+    }
+  }
+
+  /* Icons */
+  .why-better__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ section.settings.icon_size_mobile }}px;
+    height: {{ section.settings.icon_size_mobile }}px;
+    color: var(--icon-color);
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  @media screen and (min-width: 750px) {
+    .why-better__icon {
+      width: {{ section.settings.icon_size_desktop }}px;
+      height: {{ section.settings.icon_size_desktop }}px;
+    }
+  }
+  .why-better__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 1.5;
+  }
+  .why-better__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Item Title */
+  .why-better__item-title {
+    color: var(--title-color);
+    font-size: {{ section.settings.title_size_mobile }}px;
+    font-weight: {{ section.settings.title_weight }};
+    letter-spacing: {{ section.settings.title_letter_spacing }}px;
+    margin: 0 0 {{ section.settings.title_margin_bottom }}px;
+    line-height: 1.3;
+    {% if section.settings.uppercase_titles %}
+      text-transform: uppercase;
+    {% endif %}
+  }
+  @media screen and (min-width: 750px) {
+    .why-better__item-title {
+      font-size: {{ section.settings.title_size_desktop }}px;
+    }
+  }
+
+  /* Item Text */
+  .why-better__item-text {
+    color: var(--text-color);
+    font-size: {{ section.settings.text_size_mobile }}px;
+    line-height: {{ section.settings.text_line_height }};
+    margin: 0;
+    opacity: 0.88;
+  }
+  @media screen and (min-width: 750px) {
+    .why-better__item-text {
+      font-size: {{ section.settings.text_size_desktop }}px;
+    }
+  }
+  {% if section.settings.hide_text_mobile %}
+    @media screen and (max-width: 749px) {
+      .why-better__item-text {
+        display: none;
+      }
+    }
+  {% endif %}
+{%- endstyle -%}
+
+<div
+  id="why-we-are-better-{{ section.id }}"
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %} why-better__wrapper-{{ section.id }}">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="why-better__heading-{{ section.id }}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    <div class="why-better__grid">
+      <!-- Left Column Features -->
+      <div class="why-better__column why-better__column--left">
+        {% for block in section.blocks %}
+          {% if block.settings.column == 'left' %}
+            <div class="why-better__item" {{ block.shopify_attributes }}>
+              <div class="why-better__icon">
+                {% if block.settings.custom_icon != blank %}
+                  {{
+                    block.settings.custom_icon
+                    | image_url: width: 120
+                    | image_tag: loading: 'lazy', alt: block.settings.title
+                  }}
+                {% else %}
+                  {% render 'why-better-icons', icon: block.settings.icon %}
+                {% endif %}
+              </div>
+              {% if block.settings.title != blank %}
+                <h3 class="why-better__item-title">{{ block.settings.title }}</h3>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div class="why-better__item-text">{{ block.settings.text }}</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Center Showcase Image Column -->
+      <div class="why-better__image-column">
+        <div class="why-better__image-wrapper">
+          {% if section.settings.image != blank %}
+            {{
+              section.settings.image
+              | image_url: width: 1200
+              | image_tag:
+                loading: section.settings.lazy_load_setting,
+                alt: section.settings.heading,
+                widths: '375, 550, 750, 1100, 1500'
+            }}
+          {% else %}
+            <img
+              src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?q=80&w=800&auto=format&fit=crop"
+              alt="Showcase Product Placeholder"
+              loading="lazy"
+              width="800"
+              height="800"
+            >
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right Column Features -->
+      <div class="why-better__column why-better__column--right">
+        {% for block in section.blocks %}
+          {% if block.settings.column == 'right' %}
+            <div class="why-better__item" {{ block.shopify_attributes }}>
+              <div class="why-better__icon">
+                {% if block.settings.custom_icon != blank %}
+                  {{
+                    block.settings.custom_icon
+                    | image_url: width: 120
+                    | image_tag: loading: 'lazy', alt: block.settings.title
+                  }}
+                {% else %}
+                  {% render 'why-better-icons', icon: block.settings.icon %}
+                {% endif %}
+              </div>
+              {% if block.settings.title != blank %}
+                <h3 class="why-better__item-title">{{ block.settings.title }}</h3>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div class="why-better__item-text">{{ block.settings.text }}</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Why We Are Better",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "1. Heading Customization"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Why we are better",
+      "label": "Section Heading Text"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 24,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 42,
+      "label": "Heading Font Size (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Heading Font Size (Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "options": [
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi Bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "500",
+      "label": "Heading Font Weight"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "label": "Heading Alignment"
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 48,
+      "label": "Heading Margin Bottom"
+    },
+    {
+      "type": "header",
+      "content": "2. Body & Items Settings"
+    },
+    {
+      "type": "range",
+      "id": "item_gap_desktop",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 44,
+      "label": "Gap Between Items (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "item_gap_mobile",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32,
+      "label": "Gap Between Items (Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "min": 24,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48,
+      "label": "Icon Size (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "min": 20,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 40,
+      "label": "Icon Size (Mobile)"
+    },
+    {
+      "type": "header",
+      "content": "3. Center Image Customization"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Showcase Center Image"
+    },
+    {
+      "type": "range",
+      "id": "image_column_width",
+      "min": 250,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 380,
+      "label": "Image Column Width (Desktop)"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_order",
+      "options": [
+        { "value": "1", "label": "Top (Above Features)" },
+        { "value": "2", "label": "Middle (Between Columns)" },
+        { "value": "3", "label": "Bottom (Below Features)" }
+      ],
+      "default": "2",
+      "label": "Mobile Image Position"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "label": "Image Border Radius"
+    },
+    {
+      "type": "range",
+      "id": "image_border_width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Image Border Width"
+    },
+    {
+      "type": "header",
+      "content": "4. Content Alignment"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment_desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "label": "Items Content Alignment (Desktop)"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment_mobile",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "label": "Items Content Alignment (Mobile)"
+    },
+    {
+      "type": "header",
+      "content": "5. Text Customization"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "label": "Item Title Font Size (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15,
+      "label": "Item Title Font Size (Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600",
+      "label": "Title Font Weight"
+    },
+    {
+      "type": "range",
+      "id": "title_letter_spacing",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1,
+      "label": "Title Letter Spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase_titles",
+      "default": true,
+      "label": "Uppercase item titles"
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8,
+      "label": "Title Margin Bottom"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14,
+      "label": "Item Description Size (Desktop)"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13,
+      "label": "Item Description Size (Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "text_line_height",
+      "options": [
+        { "value": "1.3", "label": "Tight (1.3)" },
+        { "value": "1.5", "label": "Normal (1.5)" },
+        { "value": "1.7", "label": "Relaxed (1.7)" }
+      ],
+      "default": "1.5",
+      "label": "Description Line Height"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_text_mobile",
+      "default": false,
+      "label": "Hide item description text on mobile"
+    },
+    {
+      "type": "header",
+      "content": "6. Color Customization"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Theme Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "default": "#121212",
+      "label": "Main Heading Color"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "default": "#121212",
+      "label": "Item Title Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "default": "#555555",
+      "label": "Item Description Color"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "default": "#121212",
+      "label": "Icon Color"
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "default": "#e5e5e5",
+      "label": "Image Border Color"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "default": "#ffffff",
+      "label": "Section Background Color"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Section Background Gradient"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "default": "transparent",
+      "label": "Section Top/Bottom Border Color"
+    },
+    {
+      "type": "header",
+      "content": "7. Spacing & Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "Full Width Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1200,
+      "label": "Content Maximum Width"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Section Border Width"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60,
+      "label": "Padding Top"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60,
+      "label": "Padding Bottom"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20,
+      "label": "Padding Sides"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "label": "Margin Top"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "label": "Margin Bottom"
+    },
+    {
+      "type": "header",
+      "content": "8. Performance Settings"
+    },
+    {
+      "type": "select",
+      "id": "lazy_load_setting",
+      "options": [
+        { "value": "lazy", "label": "Lazy Load (Recommended)" },
+        { "value": "eager", "label": "Eager Load (Fast render above fold)" }
+      ],
+      "default": "lazy",
+      "label": "Image Loading Strategy"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_item",
+      "name": "Feature Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "column",
+          "options": [
+            { "value": "left", "label": "Left Side" },
+            { "value": "right", "label": "Right Side" }
+          ],
+          "default": "left",
+          "label": "Column Side Placement"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "options": [
+            { "value": "heart", "label": "Heart (Eye Comfort)" },
+            { "value": "double_heart", "label": "Double Hearts (Anti-Glare)" },
+            { "value": "sleep", "label": "Clock / Sleep" },
+            { "value": "touch", "label": "Globe / Touch Sensitivity" },
+            { "value": "shield", "label": "Gift / Shield Protection" },
+            { "value": "lock", "label": "Lock (Easy Installation)" },
+            { "value": "star", "label": "Star" },
+            { "value": "award", "label": "Award / Ribbon" },
+            { "value": "leaf", "label": "Eco Leaf" },
+            { "value": "check", "label": "Checkmark" }
+          ],
+          "default": "heart",
+          "label": "Built-in Icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Or Custom Image / SVG Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "EYE COMFORT",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Reduces eye strain by blocking harmful blue light from screens, making digital time comfortable.",
+          "label": "Description Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Why We Are Better",
+      "blocks": [
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "left",
+            "icon": "heart",
+            "title": "EYE COMFORT",
+            "text": "Reduces eye strain by blocking harmful blue light from screens, making digital time comfortable."
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "left",
+            "icon": "sleep",
+            "title": "BETTER SLEEP",
+            "text": "Improves sleep quality by minimizing blue light exposure, which can interfere with circadian rhythms."
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "left",
+            "icon": "shield",
+            "title": "ENHANCED PROTECTION",
+            "text": "Shields your screen from scratches and impacts, extending the lifespan of your device."
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "right",
+            "icon": "double_heart",
+            "title": "ANTI-GLARE",
+            "text": "Reduces glare from sunlight and artificial lighting, improving visibility in bright conditions."
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "right",
+            "icon": "touch",
+            "title": "TOUCH SENSITIVITY",
+            "text": "Maintains the original touch responsiveness of your device, ensuring a seamless user experience."
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "column": "right",
+            "icon": "lock",
+            "title": "EASY INSTALLATION",
+            "text": "Designed for a bubble-free application, making it simple to apply without professional assistance."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

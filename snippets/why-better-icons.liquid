@@ -1,0 +1,54 @@
+{% case icon %}
+  {% when 'heart' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.72-8.72 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  {% when 'double_heart' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 11.37A4 4 0 1 0 10.34 5.7L9.27 6.77 8.2 5.7A4 4 0 0 0 2.54 11.37L3.6 12.43 9.27 18.1l5.67-5.67 1.06-1.06z"></path>
+      <path d="M14.5 15.5l1.06 1.06 4.9-4.9a3.5 3.5 0 0 0-4.95-4.95L14.5 7.7"></path>
+    </svg>
+  {% when 'sleep' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+  {% when 'touch' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"></circle>
+      <line x1="3.6" y1="9" x2="20.4" y2="9"></line>
+      <line x1="3.6" y1="15" x2="20.4" y2="15"></line>
+      <path d="M11.5 3a17 17 0 0 0 0 18"></path>
+      <path d="M12.5 3a17 17 0 0 1 0 18"></path>
+    </svg>
+  {% when 'shield' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="8" width="14" height="12" rx="2"></rect>
+      <path d="M8 8V6a4 4 0 0 1 8 0v2"></path>
+      <line x1="12" y1="12" x2="12" y2="16"></line>
+    </svg>
+  {% when 'lock' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+      <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+      <circle cx="12" cy="16" r="1"></circle>
+    </svg>
+  {% when 'star' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+    </svg>
+  {% when 'award' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="6"></circle>
+      <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"></path>
+    </svg>
+  {% when 'leaf' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 20A9 9 0 0 1 2 11C2 5.5 5.5 2 11 2c5.5 0 11 3.5 11 9a9 9 0 0 1-9 9z"></path>
+      <path d="M11 2v18"></path>
+    </svg>
+  {% else %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+{% endcase %}
