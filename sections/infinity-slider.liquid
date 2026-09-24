@@ -1,0 +1,903 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .infinity-slider-section{overflow:hidden;}
+  .infinity-slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .infinity-slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 692px;
+    width: 100%;
+  }
+
+  /* Phone Mockup Styling */
+  .infinity-phone-frame-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    max-width: 744px;
+    max-height: 744px;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 84px 48px 84px;
+    box-sizing: border-border-box;
+  }
+
+  @media screen and (max-width: 749px) {
+    .infinity-phone-frame-wrapper {
+      width: 510px;
+      height: 502px;
+      padding: 28px 18px 24px;
+    }
+    .infinity-slider-container {
+      min-height: 460px;
+    }
+  }
+
+  /* Default Phone SVG / Image Frame */
+  .infinity-phone-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    z-index: 12;
+    pointer-events: none;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.15));
+  }
+
+  .infinity-phone-svg-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 12;
+    pointer-events: none;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.18));
+  }
+
+  /* Content inside Phone Display */
+  .infinity-phone-header {
+    position: relative;
+    z-index: 15;
+    text-align: center;
+    width: 100%;
+    padding: 24px 16px 12px;
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .infinity-phone-heading {
+    margin: 0;
+    font-family: inherit;
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--infinity-phone-text-color, #707b46);
+    letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  @media screen and (max-width: 749px) {
+    .infinity-phone-header {
+      padding: 20px 12px 10px;
+    }
+    .infinity-phone-heading {
+      font-size: 1.6rem;
+    }
+  }
+
+  .infinity-phone-footer {
+    position: relative;
+    z-index: 15;
+    width: 100%;
+    max-width: 240px;
+    display: flex;
+    justify-content: center;
+    padding: 12px 16px 20px;
+    border-bottom-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .infinity-phone-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 20px;
+    border: 2px solid var(--infinity-phone-btn-border, #707b46);
+    border-radius: 12px;
+    background-color: transparent;
+    color: var(--infinity-phone-btn-text, #707b46);
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+
+  .infinity-phone-btn:hover {
+    background-color: var(--infinity-phone-btn-border, #707b46);
+    color: #ffffff;
+  }
+
+  /* Slider Track & Cards */
+  .infinity-slider-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 999;
+  }
+
+  .infinity-slider-track {
+    display: flex;
+    align-items: center;
+    position: relative;
+    left: 50%;
+    will-change: transform;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    cursor: grab;
+  }
+
+  .infinity-slider-track:active {
+    cursor: grabbing;
+  }
+
+  .infinity-slide-item {
+    flex: 0 0 248px;
+    width: 248px;
+    height: 320px;
+    margin: 0 15px;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    background: #f4f4f4;
+  }
+
+  @media screen and (max-width: 749px) {
+    .infinity-slide-item {
+      flex: 0 0 170px;
+      width: 170px;
+      height: 210px;
+      margin: 0 10px;
+      border-radius: 18px;
+    }
+  }
+
+  .infinity-slide-item.is-active {
+    transform: scale(1.05);
+    opacity: 1;
+    z-index: 5;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  }
+
+  .infinity-slide-item:not(.is-active) {
+    transform: scale(0.92);
+    opacity: 0.85;
+  }
+
+  .infinity-slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+  }
+
+  .infinity-slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0e0e0;
+    color: #666;
+  }
+
+  .infinity-slide-placeholder svg {
+    width: 70%;
+    height: 70%;
+  }
+
+  /* Navigation Controls */
+  .infinity-slider-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    z-index: 20;
+    position: relative;
+  }
+
+  .infinity-nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .infinity-nav-btn:hover {
+    background: #333333;
+    color: #ffffff;
+    border-color: #333333;
+    transform: scale(1.05);
+  }
+
+  .infinity-nav-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .heading__text--left {
+    justify-content: flex-start;
+  }
+  .heading__text--center {
+    justify-content: center;
+  }
+  .heading__text--right {
+    justify-content: flex-end;
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding infinity-slider-section">
+  <div class="{% if section.settings.layout == 'page_width' %}page-width{% else %}full-page-width{% endif %}">
+    {%- if section.settings.section_heading != blank -%}
+      <div
+        class="title-wrapper-with-link title-wrapper--self-padded-mobile title-wrapper--no-top-margin heading__text--{{ section.settings.text_alignment }}"
+        style="margin-bottom: 2rem;"
+      >
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.section_heading }}
+        </h2>
+      </div>
+    {%- endif -%}
+
+    <infinity-phone-slider
+      class="infinity-slider-wrapper"
+      data-auto-slide="{{ section.settings.auto_slide }}"
+      data-rotate-seconds="{{ section.settings.rotate_seconds }}"
+      data-section-id="{{ section.id }}"
+    >
+      <div class="infinity-slider-container">
+        <!-- Phone Mockup Overlay -->
+        <div class="infinity-phone-frame-wrapper">
+          <!-- Background Phone Image / Native Frame -->
+          {%- if section.settings.phone_image != blank -%}
+            {{
+              section.settings.phone_image
+              | image_url: width: 800
+              | image_tag: class: 'infinity-phone-bg', loading: 'lazy', alt: section.settings.phone_image.alt
+              | default: 'Phone frame'
+            }}
+          {%- else -%}
+            <!-- Sleek Vector SVG iPhone Frame -->
+            <svg class="infinity-phone-svg-frame" viewBox="0 0 320 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Shadow & Outer Body Frame -->
+              <rect x="2" y="2" width="316" height="556" rx="44" fill="#2d3132" stroke="#464a4b" stroke-width="4"/>
+              <!-- Inner Screen Bezel Border -->
+              <rect x="8" y="8" width="304" height="544" rx="38" stroke="#121314" stroke-width="6" fill="none"/>
+              <!-- Top Dynamic Island / Notch -->
+              <rect x="115" y="18" width="90" height="22" rx="11" fill="#0d0d0e"/>
+              <circle cx="192" cy="29" r="4" fill="#1b1d24"/>
+              <circle cx="132" cy="29" r="3" fill="#14161c"/>
+              <!-- Side Buttons detail -->
+              <path d="M-2 100 h4 v35 h-4 z" fill="#3a3e3f"/>
+              <path d="M-2 150 h4 v50 h-4 z" fill="#3a3e3f"/>
+              <path d="M318 130 h4 v65 h-4 z" fill="#3a3e3f"/>
+            </svg>
+          {%- endif -%}
+
+          <!-- Phone Top Header (Dynamic Slide Title) -->
+          <div class="infinity-phone-header" js-phone-header>
+            <h3 class="infinity-phone-heading" js-phone-heading>
+              {%- if section.blocks.size > 0 -%}
+                {{ section.blocks.first.settings.heading | escape }}
+              {%- else -%}
+                Still Looking For More?
+              {%- endif -%}
+            </h3>
+          </div>
+
+          <!-- Phone Bottom Footer (Dynamic Button) -->
+          <div class="infinity-phone-footer" js-phone-footer>
+            {%- assign first_block = section.blocks.first -%}
+            <a
+              href="{{ first_block.settings.button_link | default: '#' }}"
+              class="infinity-phone-btn"
+              js-phone-btn
+              {% if first_block.settings.button_link == blank %}
+                role="link" aria-disabled="true"
+              {% endif %}
+            >
+              {{ first_block.settings.button_label | default: 'Shop the Look' }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Horizontal Slide Cards Track -->
+        <div class="infinity-slider-viewport">
+          <div class="infinity-slider-track" js-slider-track>
+            {%- if section.blocks.size > 0 -%}
+              {%- for block in section.blocks -%}
+                <div
+                  class="infinity-slide-item{% if forloop.first %} is-active{% endif %}"
+                  data-index="{{ forloop.index0 }}"
+                  data-block-id="{{ block.id }}"
+                  data-heading="{{ block.settings.heading | escape }}"
+                  data-btn-label="{{ block.settings.button_label | escape }}"
+                  data-btn-link="{{ block.settings.button_link | escape }}"
+                  {{ block.shopify_attributes }}
+                >
+                  {%- if block.settings.image != blank -%}
+                    {{
+                      block.settings.image
+                      | image_url: width: 600
+                      | image_tag: class: 'infinity-slide-image', loading: 'lazy', alt: block.settings.image.alt
+                      | default: block.settings.heading
+                      | escape
+                    }}
+                  {%- else -%}
+                    <div class="infinity-slide-placeholder">
+                      {{ 'product-apparel-1' | placeholder_svg_tag }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for i in (1..6) -%}
+                <div
+                  class="infinity-slide-item{% if forloop.first %} is-active{% endif %}"
+                  data-index="{{ forloop.index0 }}"
+                  data-heading="Still Looking For More?"
+                  data-btn-label="Shop the Look"
+                  data-btn-link="#"
+                >
+                  {% comment %}
+                    <div class="infinity-slide-placeholder">
+                      {%- cycle 'product-apparel-1', 'product-apparel-2', 'product-apparel-3', 'product-apparel-4' | placeholder_svg_tag -%}
+                    </div>
+                  {% endcomment %}
+                </div>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      {%- if section.settings.show_arrows -%}
+        <div class="infinity-slider-nav">
+          <button class="infinity-nav-btn infinity-nav-prev" js-prev-btn aria-label="Previous slide">
+            <svg viewBox="0 0 24 24">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <button class="infinity-nav-btn infinity-nav-next" js-next-btn aria-label="Next slide">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </infinity-phone-slider>
+  </div>
+</div>
+
+<script>
+  if (!customElements.get('infinity-phone-slider')) {
+    customElements.define(
+      'infinity-phone-slider',
+      class InfinityPhoneSlider extends HTMLElement {
+        constructor() {
+          super();
+          this.track = this.querySelector('[js-slider-track]');
+          this.phoneHeading = this.querySelector('[js-phone-heading]');
+          this.phoneBtn = this.querySelector('[js-phone-btn]');
+          this.prevBtn = this.querySelector('[js-prev-btn]');
+          this.nextBtn = this.querySelector('[js-next-btn]');
+
+          this.autoSlide = this.dataset.autoSlide === 'true';
+          this.rotateSeconds = parseFloat(this.dataset.rotateSeconds) || 4;
+
+          this.currentIndex = 0;
+          this.timer = null;
+          this.isDragging = false;
+          this.startX = 0;
+          this.currentTranslate = 0;
+          this.prevTranslate = 0;
+
+          this.init();
+        }
+
+        init() {
+          this.originalSlides = Array.from(this.track.children);
+          this.totalSlides = this.originalSlides.length;
+
+          if (this.totalSlides === 0) return;
+
+          // Clone slides to enable smooth infinite loop
+          this.setupInfiniteClones();
+
+          // Calculate card widths and offset
+          this.updateLayout();
+
+          // Event listeners
+          window.addEventListener('resize', () => this.updateLayout());
+
+          if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
+          if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
+
+          // Touch and Mouse drag events
+          this.track.addEventListener('touchstart', (e) => this.touchStart(e), { passive: true });
+          this.track.addEventListener('touchmove', (e) => this.touchMove(e), { passive: true });
+          this.track.addEventListener('touchend', () => this.touchEnd());
+
+          this.track.addEventListener('mousedown', (e) => this.dragStart(e));
+          this.track.addEventListener('mousemove', (e) => this.dragMove(e));
+          this.track.addEventListener('mouseup', () => this.dragEnd());
+          this.track.addEventListener('mouseleave', () => this.dragEnd());
+
+          // Hover pause
+          this.addEventListener('mouseenter', () => this.stopAutoSlide());
+          this.addEventListener('mouseleave', () => this.startAutoSlide());
+
+          // Initial setup
+          this.goToSlide(0, false);
+          this.startAutoSlide();
+
+          // Theme editor integrations
+          if (Shopify.designMode) {
+            document.addEventListener('shopify:block:select', (e) => {
+              const index = Array.from(this.originalSlides).findIndex(
+                (slide) => slide.dataset.blockId === e.detail.blockId
+              );
+              if (index !== -1) this.goToSlide(index);
+            });
+          }
+        }
+
+        setupInfiniteClones() {
+          // Append clones for infinite wrapping
+          const cloneCount = Math.max(3, this.totalSlides);
+          this.clonesBefore = [];
+          this.clonesAfter = [];
+
+          for (let i = 0; i < cloneCount; i++) {
+            const cloneAfter = this.originalSlides[i % this.totalSlides].cloneNode(true);
+            cloneAfter.classList.add('is-clone');
+            this.track.appendChild(cloneAfter);
+            this.clonesAfter.push(cloneAfter);
+
+            const cloneBeforeIdx = this.totalSlides - 1 - (i % this.totalSlides);
+            const cloneBefore = this.originalSlides[cloneBeforeIdx].cloneNode(true);
+            cloneBefore.classList.add('is-clone');
+            this.track.insertBefore(cloneBefore, this.track.firstChild);
+            this.clonesBefore.unshift(cloneBefore);
+          }
+
+          this.allSlides = Array.from(this.track.children);
+          this.startIndexOffset = this.clonesBefore.length;
+        }
+
+        updateLayout() {
+          if (!this.allSlides || this.allSlides.length === 0) return;
+          this.goToSlide(this.currentIndex, false);
+        }
+
+        goToSlide(index, animate = true) {
+          this.currentIndex = index;
+          const targetIndex = this.startIndexOffset + index;
+          const activeSlide = this.allSlides[targetIndex];
+
+          if (!activeSlide) return;
+
+          // Update active class on slides first so layout and scale transforms apply
+          this.allSlides.forEach((slide, i) => {
+            if (i === targetIndex) {
+              slide.classList.add('is-active');
+            } else {
+              slide.classList.remove('is-active');
+            }
+          });
+
+          // Calculate offset using offsetLeft and offsetWidth for exact pixel-perfect centering
+          const cardCenter = activeSlide.offsetLeft + activeSlide.offsetWidth / 2;
+          const offset = -cardCenter;
+
+          if (!animate) {
+            this.track.style.transition = 'none';
+          } else {
+            this.track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+          }
+
+          this.track.style.transform = `translateX(${offset}px)`;
+
+          // Update phone screen header and button
+          this.updatePhoneContent(
+            activeSlide.dataset.heading || '',
+            activeSlide.dataset.btnLabel || 'Shop the Look',
+            activeSlide.dataset.btnLink || '#'
+          );
+
+          // Seamless wrap around check
+          if (animate) {
+            setTimeout(() => {
+              this.checkInfiniteWrap();
+            }, 600);
+          }
+        }
+
+        checkInfiniteWrap() {
+          if (this.currentIndex >= this.totalSlides) {
+            this.currentIndex = 0;
+            this.goToSlide(this.currentIndex, false);
+          } else if (this.currentIndex < 0) {
+            this.currentIndex = this.totalSlides - 1;
+            this.goToSlide(this.currentIndex, false);
+          }
+        }
+
+        updatePhoneContent(heading, btnLabel, btnLink) {
+          if (this.phoneHeading) {
+            this.phoneHeading.style.opacity = '0';
+            this.phoneHeading.style.transform = 'translateY(-6px)';
+            setTimeout(() => {
+              this.phoneHeading.textContent = heading;
+              this.phoneHeading.style.opacity = '1';
+              this.phoneHeading.style.transform = 'translateY(0)';
+            }, 150);
+          }
+
+          if (this.phoneBtn) {
+            this.phoneBtn.style.opacity = '0';
+            this.phoneBtn.style.transform = 'translateY(6px)';
+            setTimeout(() => {
+              this.phoneBtn.textContent = btnLabel;
+              this.phoneBtn.setAttribute('href', btnLink || '#');
+              if (!btnLink || btnLink === '#') {
+                this.phoneBtn.setAttribute('role', 'link');
+                this.phoneBtn.setAttribute('aria-disabled', 'true');
+              } else {
+                this.phoneBtn.removeAttribute('role');
+                this.phoneBtn.removeAttribute('aria-disabled');
+              }
+              this.phoneBtn.style.opacity = '1';
+              this.phoneBtn.style.transform = 'translateY(0)';
+            }, 150);
+          }
+        }
+
+        next() {
+          this.goToSlide(this.currentIndex + 1);
+        }
+
+        prev() {
+          this.goToSlide(this.currentIndex - 1);
+        }
+
+        startAutoSlide() {
+          if (!this.autoSlide || this.totalSlides <= 1) return;
+          this.stopAutoSlide();
+          this.timer = setInterval(() => {
+            this.next();
+          }, this.rotateSeconds * 1000);
+        }
+
+        stopAutoSlide() {
+          if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+        }
+
+        /* Drag & Touch Handlers */
+        touchStart(e) {
+          this.stopAutoSlide();
+          this.isDragging = true;
+          this.startX = e.touches[0].clientX;
+        }
+
+        touchMove(e) {
+          if (!this.isDragging) return;
+          const currentX = e.touches[0].clientX;
+          const diff = currentX - this.startX;
+          if (Math.abs(diff) > 40) {
+            if (diff < 0) {
+              this.next();
+            } else {
+              this.prev();
+            }
+            this.isDragging = false;
+          }
+        }
+
+        touchEnd() {
+          this.isDragging = false;
+          this.startAutoSlide();
+        }
+
+        dragStart(e) {
+          this.stopAutoSlide();
+          this.isDragging = true;
+          this.startX = e.clientX;
+        }
+
+        dragMove(e) {
+          if (!this.isDragging) return;
+          const currentX = e.clientX;
+          const diff = currentX - this.startX;
+          if (Math.abs(diff) > 50) {
+            if (diff < 0) {
+              this.next();
+            } else {
+              this.prev();
+            }
+            this.isDragging = false;
+          }
+        }
+
+        dragEnd() {
+          this.isDragging = false;
+          this.startAutoSlide();
+        }
+      }
+    );
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Infinity Phone Slider",
+  "tag": "section",
+  "class": "section section-infinity-slider",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Explore Our Lookbook"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        },
+        {
+          "value": "hxl",
+          "label": "Extra large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "label": "Heading alignment"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "full_width",
+          "label": "Full page"
+        },
+        {
+          "value": "page_width",
+          "label": "Page"
+        }
+      ],
+      "default": "page_width"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_slide",
+      "label": "Auto slide on/off",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rotate_seconds",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Slide rotate seconds",
+      "default": 4
+    },
+    {
+      "type": "image_picker",
+      "id": "phone_image",
+      "label": "Dynamic phone frame image",
+      "info": "Upload a custom transparent PNG smartphone mockup frame. Leaves vector frame as default if blank."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide image"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Slide heading",
+          "default": "Still Looking For More?"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop the Look"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Infinity Phone Slider",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Still Looking For More?",
+            "button_label": "Shop the Look"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Discover New Arrivals",
+            "button_label": "Explore Collection"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Trending Outfits Today",
+            "button_label": "Shop Trends"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Curated Style Edits",
+            "button_label": "View Lookbook"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Elevate Your Wardrobe",
+            "button_label": "Shop Now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
