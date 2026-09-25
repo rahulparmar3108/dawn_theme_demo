@@ -91,7 +91,7 @@ function enableSideZoomOnHover() {
     const mediaContainer = image.closest('.product__media') || image.parentElement;
     if (!mediaContainer) return;
 
-    const mainProduct = image.closest('.product') || mediaContainer.closest('.product') || mediaContainer.parentElement;
+    const productWrapper = image.closest('.product') || image.closest('.product__media-wrapper') || mediaContainer;
 
     let lens = null;
     let resultWindow = null;
@@ -107,11 +107,11 @@ function enableSideZoomOnHover() {
     }
 
     function getOrCreateResultWindow() {
-      let r = mainProduct.querySelector('.zoom-side-result');
+      let r = productWrapper.querySelector('.zoom-side-result');
       if (!r) {
         r = document.createElement('div');
         r.className = 'zoom-side-result';
-        mainProduct.appendChild(r);
+        productWrapper.appendChild(r);
       }
       const highResUrl = image.getAttribute('data-master-url') || image.currentSrc || image.src;
       r.style.backgroundImage = `url('${highResUrl}')`;
@@ -121,7 +121,6 @@ function enableSideZoomOnHover() {
     function updateSideZoom(event) {
       const imgRect = image.getBoundingClientRect();
       const containerRect = mediaContainer.getBoundingClientRect();
-      const productRect = mainProduct.getBoundingClientRect();
 
       const mouseX = event.clientX - imgRect.left;
       const mouseY = event.clientY - imgRect.top;
@@ -154,23 +153,10 @@ function enableSideZoomOnHover() {
       lens.style.width = `${lensWidth}px`;
       lens.style.height = `${lensHeight}px`;
 
-      // Position result window strictly inside the product info column bounds
-      const infoWrapper = mainProduct.querySelector('.product__info-wrapper');
-      if (window.innerWidth >= 750 && infoWrapper) {
-        const infoRect = infoWrapper.getBoundingClientRect();
-        resultWindow.style.left = `${infoRect.left - productRect.left}px`;
-        resultWindow.style.top = `${containerRect.top - productRect.top}px`;
-        resultWindow.style.width = `${infoRect.width}px`;
-        resultWindow.style.height = `${containerRect.height}px`;
-      } else {
-        resultWindow.style.left = `${containerRect.left - productRect.left}px`;
-        resultWindow.style.top = `${containerRect.top - productRect.top}px`;
-        resultWindow.style.width = `${containerRect.width}px`;
-        resultWindow.style.height = `${containerRect.height}px`;
-      }
-
       resultWindow.style.display = 'block';
       resultWindow.style.opacity = '1';
+
+      resultWindow.style.height = `${imgRect.height}px`;
 
       const resRect = resultWindow.getBoundingClientRect();
       const ratioX = resRect.width / lensWidth;
