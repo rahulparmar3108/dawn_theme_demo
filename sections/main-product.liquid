@@ -5,7 +5,7 @@
   data-product-id="{{ product.id }}"
   data-update-url="true"
   data-url="{{ product.url }}"
-  {% if section.settings.image_zoom == 'hover' %}
+  {% if section.settings.image_zoom == 'hover' or section.settings.image_zoom == 'hover_zoom' %}
     data-zoom-on-hover
   {% endif %}
 >
@@ -46,7 +46,7 @@
     <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 
-  {% if section.settings.image_zoom == 'hover' %}
+  {% if section.settings.image_zoom == 'hover' or section.settings.image_zoom == 'hover_zoom' %}
     <script id="EnableZoomOnHover-main" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
   {% endif %}
   {%- if request.design_mode -%}
@@ -72,9 +72,10 @@
     >
   {%- endif -%}
 
-  
-  {% comment %} <product-recently-viewed data-product-id="{{ product.id }}" class="hidden"></product-recently-viewed>
-  {% render 'recently-product-viewed' %} {% endcomment %}
+  {% comment %}
+    <product-recently-viewed data-product-id="{{ product.id }}" class="hidden"></product-recently-viewed>
+    {% render 'recently-product-viewed' %}
+  {% endcomment %}
 
   {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   <div class="page-width">
@@ -2222,6 +2223,10 @@
         {
           "value": "hover",
           "label": "t:sections.main-product.settings.image_zoom.options__2.label"
+        },
+        {
+          "value": "hover_zoom",
+          "label": "t:sections.main-product.settings.image_zoom.options__4.label"
         },
         {
           "value": "none",

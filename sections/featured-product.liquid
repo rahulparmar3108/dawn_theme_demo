@@ -10,7 +10,7 @@
   data-product-id="{{ product.id }}"
   data-update-url="false"
   data-url="{{ product.url }}"
-  {% if section.settings.image_zoom == 'hover' %}
+  {% if section.settings.image_zoom == 'hover' or section.settings.image_zoom == 'hover_zoom' %}
     data-zoom-on-hover
   {% endif %}
 >
@@ -469,7 +469,7 @@
   </section>
 
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-  {%- if section.settings.image_zoom == 'hover' -%}
+  {%- if section.settings.image_zoom == 'hover' or section.settings.image_zoom == 'hover_zoom' -%}
     <script id="EnableZoomOnHover-featured" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
   {%- endif %}
   {%- if request.design_mode -%}
@@ -1425,6 +1425,10 @@
         {
           "value": "hover",
           "label": "t:sections.main-product.settings.image_zoom.options__2.label"
+        },
+        {
+          "value": "hover_zoom",
+          "label": "t:sections.main-product.settings.image_zoom.options__4.label"
         },
         {
           "value": "none",
